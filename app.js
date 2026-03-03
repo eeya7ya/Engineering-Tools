@@ -476,7 +476,7 @@ async function init() {
       const t = setInterval(() => { if (window.google) { clearInterval(t); resolve(); } }, 100);
       setTimeout(() => { clearInterval(t); resolve(); }, 5000);
     });
-    initGoogle(googleClientId);
+    try { initGoogle(googleClientId); } catch (e) { console.warn('[google]', e.message); }
   }
 
   // Restore existing session

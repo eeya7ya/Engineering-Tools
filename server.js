@@ -37,6 +37,11 @@ const _dbReady = initDB().catch(err => {
   console.error('[db] init error:', err.message);
 });
 
+// ─── Public config (no DB needed) ────────────────────────────────────────
+app.get('/api/config', (_req, res) => {
+  res.json({ googleClientId: process.env.GOOGLE_CLIENT_ID || null });
+});
+
 // Block API requests until DB is initialised
 app.use('/api', async (_req, res, next) => {
   try { await _dbReady; next(); }
@@ -66,11 +71,6 @@ function requireAuth(req, res, next) {
 function publicUser(u) {
   return { id: u.id, email: u.email, name: u.name, avatar: u.avatar };
 }
-
-// ─── Public config (GOOGLE_CLIENT_ID safe to expose) ─────────────────────
-app.get('/api/config', (_req, res) => {
-  res.json({ googleClientId: process.env.GOOGLE_CLIENT_ID });
-});
 
 // ─── Google OAuth ─────────────────────────────────────────────────────────
 app.post('/api/auth/google', async (req, res) => {
