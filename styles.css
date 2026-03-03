@@ -412,6 +412,36 @@ body {
   margin: 4px 0;
 }
 
+/* ── Google fallback button (shown when GIS SDK isn't configured) ── */
+.google-btn-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 340px;
+  max-width: 100%;
+  padding: 11px 20px;
+  background: var(--white);
+  border: 1.5px solid #dadce0;
+  border-radius: 4px;
+  font-family: 'Google Sans', 'Segoe UI', system-ui, sans-serif;
+  font-size: .93rem;
+  font-weight: 500;
+  color: #3c4043;
+  cursor: pointer;
+  transition: background .2s, box-shadow .2s, border-color .2s;
+  box-shadow: 0 1px 3px rgba(0,0,0,.08);
+}
+.google-btn-fallback:hover {
+  background: #f8f9fa;
+  box-shadow: 0 2px 8px rgba(0,0,0,.13);
+  border-color: #c6c9cc;
+}
+.google-btn-fallback:active {
+  background: #f1f3f4;
+}
+.google-btn-fallback.hidden { display: none; }
+
 /* ── Divider ────────────────────────────────────── */
 .login-divider {
   display: flex;

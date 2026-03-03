@@ -124,6 +124,14 @@ document.addEventListener('mousemove', e => {
 const geoChars = [...document.querySelectorAll('.geo-char')];
 const surprisedCooldown = new Map();
 
+// Wander state: each shape gets independent drift velocity
+geoChars.forEach(shape => {
+  shape._wx  = 0;
+  shape._wy  = 0;
+  shape._wvx = (Math.random() - 0.5) * 1.1;
+  shape._wvy = (Math.random() - 0.5) * 0.8;
+});
+
 function center(el) {
   const r = el.getBoundingClientRect();
   return { x: r.left + r.width / 2, y: r.top + r.height / 2, rect: r };
@@ -172,6 +180,33 @@ function animateGeoChars() {
       if (!shape.classList.contains('surprised')) shape.classList.add('excited');
     } else {
       shape.classList.remove('excited');
+    }
+
+    // Wander effect: shapes drift freely when cursor is near the login card
+    if (nearCard) {
+      shape.style.animationPlayState = 'paused';
+      shape._wx += shape._wvx;
+      shape._wy += shape._wvy;
+      // Bounce within wander bounds and nudge velocity randomly for organic motion
+      if (Math.abs(shape._wx) > 32) { shape._wvx *= -1; shape._wx += shape._wvx; }
+      if (Math.abs(shape._wy) > 24) { shape._wvy *= -1; shape._wy += shape._wvy; }
+      shape._wvx += (Math.random() - 0.5) * 0.12;
+      shape._wvy += (Math.random() - 0.5) * 0.09;
+      shape._wvx = Math.max(-1.8, Math.min(1.8, shape._wvx));
+      shape._wvy = Math.max(-1.4, Math.min(1.4, shape._wvy));
+      shape.style.transform = `translate(${shape._wx}px, ${shape._wy}px)`;
+    } else {
+      // Ease back to resting position then restore CSS float animation
+      shape._wx *= 0.88;
+      shape._wy *= 0.88;
+      if (Math.abs(shape._wx) < 0.5 && Math.abs(shape._wy) < 0.5) {
+        shape._wx = 0;
+        shape._wy = 0;
+        shape.style.transform = '';
+        shape.style.animationPlayState = '';
+      } else {
+        shape.style.transform = `translate(${shape._wx}px, ${shape._wy}px)`;
+      }
     }
   });
 
@@ -231,8 +266,16 @@ function initGoogle(googleClientId) {
   const btnCfg = { theme: 'outline', size: 'large', text: 'continue_with', width: 340 };
   const loginEl  = document.getElementById('googleLoginBtn');
   const regEl    = document.getElementById('googleRegisterBtn');
-  if (loginEl)  google.accounts.id.renderButton(loginEl,  btnCfg);
-  if (regEl)    google.accounts.id.renderButton(regEl,    btnCfg);
+  if (loginEl)  {
+    const fb = document.getElementById('googleLoginFallback');
+    if (fb) fb.classList.add('hidden');
+    google.accounts.id.renderButton(loginEl,  btnCfg);
+  }
+  if (regEl) {
+    const fb = document.getElementById('googleRegisterFallback');
+    if (fb) fb.classList.add('hidden');
+    google.accounts.id.renderButton(regEl,    btnCfg);
+  }
 }
 
 async function handleGoogleCredential(response) {
