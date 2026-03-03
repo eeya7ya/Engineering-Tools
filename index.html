@@ -3,161 +3,181 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>eSpark Engineering Online Tools</title>
+  <title>eSpark Engineering Tools</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
 
-  <!-- Floating interactive characters canvas -->
+  <!-- Animated background canvas (visible in all views) -->
   <canvas id="bgCanvas"></canvas>
 
-  <!-- Navbar -->
-  <nav class="navbar">
-    <div class="logo">
-      <span class="logo-e">e</span><span class="logo-spark">Spark</span>
-      <span class="logo-sub">Engineering Tools</span>
-    </div>
-    <ul class="nav-links">
-      <li><a href="#tools">Tools</a></li>
-      <li><a href="#about">About</a></li>
-      <li><a href="#contact">Contact</a></li>
-    </ul>
-    <a href="login.html" class="btn-launch" style="text-decoration:none;">Launch App</a>
-  </nav>
+  <!-- ═══════════════════════════════════════════════════════════
+       VIEW 1 — LOGIN
+       ═══════════════════════════════════════════════════════════ -->
+  <div id="loginView" class="view active">
+    <div class="auth-card" id="loginCard">
 
-  <!-- Hero Section -->
-  <section class="hero">
-    <!-- Cute interactive characters (DOM-based) -->
-    <div class="characters-stage" id="charactersStage">
-      <!-- Bolt Bob -->
-      <div class="character" id="char-bolt" data-speed="0.06" data-offset-x="-320" data-offset-y="40">
-        <div class="char-body bolt-body">
-          <div class="char-eyes">
-            <div class="eye"><div class="pupil"></div></div>
-            <div class="eye"><div class="pupil"></div></div>
-          </div>
-          <div class="char-mouth smile"></div>
-          <div class="bolt-symbol">⚡</div>
-        </div>
-        <div class="char-label">Bolt Bob</div>
+      <div class="auth-logo">
+        <span class="logo-e">e</span><span class="logo-spark">Spark</span>
+        <span class="logo-sub">Engineering Tools</span>
       </div>
 
-      <!-- Ohm Omi -->
-      <div class="character" id="char-ohm" data-speed="0.04" data-offset-x="-160" data-offset-y="-60">
-        <div class="char-body ohm-body">
-          <div class="char-eyes">
-            <div class="eye"><div class="pupil"></div></div>
-            <div class="eye"><div class="pupil"></div></div>
-          </div>
-          <div class="char-mouth grin"></div>
-          <div class="ohm-symbol">Ω</div>
-        </div>
-        <div class="char-label">Ohm Omi</div>
-      </div>
+      <h2 class="auth-title">Welcome back!</h2>
+      <p class="auth-subtitle">Sign in to your engineering toolkit</p>
 
-      <!-- Watt Wanda -->
-      <div class="character" id="char-watt" data-speed="0.05" data-offset-x="80" data-offset-y="80">
-        <div class="char-body watt-body">
-          <div class="char-eyes">
-            <div class="eye"><div class="pupil"></div></div>
-            <div class="eye"><div class="pupil"></div></div>
-          </div>
-          <div class="char-mouth smile"></div>
-          <div class="watt-symbol">W</div>
-        </div>
-        <div class="char-label">Watt Wanda</div>
-      </div>
+      <!-- Google Sign-In (rendered by GIS SDK) -->
+      <div id="googleLoginBtn" class="google-btn-wrap"></div>
 
-      <!-- Amp Andy -->
-      <div class="character" id="char-amp" data-speed="0.07" data-offset-x="240" data-offset-y="-30">
-        <div class="char-body amp-body">
-          <div class="char-eyes">
-            <div class="eye"><div class="pupil"></div></div>
-            <div class="eye"><div class="pupil"></div></div>
-          </div>
-          <div class="char-mouth grin"></div>
-          <div class="amp-symbol">A</div>
-        </div>
-        <div class="char-label">Amp Andy</div>
-      </div>
-    </div>
+      <div class="auth-divider"><span>or sign in with email</span></div>
 
-    <!-- Hero text -->
-    <div class="hero-content">
-      <div class="hero-badge">⚡ Electrical Engineering Suite</div>
-      <h1 class="hero-title">
-        <span class="title-e">e</span>Spark<br />
-        <span class="title-accent">Engineering</span><br />
-        Online Tools
-      </h1>
-      <p class="hero-desc">
-        A playful, powerful toolkit for electrical engineers.<br />
-        Calculate, simulate, and design — all in one place.
+      <form id="loginForm" class="auth-form" novalidate>
+        <div class="form-group">
+          <label class="form-label" for="loginEmail">Email</label>
+          <input type="email" id="loginEmail" class="form-input"
+                 placeholder="you@example.com" autocomplete="email" />
+        </div>
+        <div class="form-group">
+          <div class="form-label-row">
+            <label class="form-label" for="loginPassword">Password</label>
+            <button type="button" class="link-btn" id="forgotBtn">Forgot password?</button>
+          </div>
+          <input type="password" id="loginPassword" class="form-input"
+                 placeholder="••••••••" autocomplete="current-password" />
+        </div>
+        <div id="loginError" class="auth-error"></div>
+        <button type="submit" class="btn-primary btn-full">Sign In ⚡</button>
+      </form>
+
+      <p class="auth-switch">
+        Don't have an account?
+        <button type="button" class="link-btn link-accent" id="toRegisterBtn">Create one free</button>
       </p>
-      <div class="hero-cta">
-        <button class="btn-primary">Explore Tools</button>
-        <button class="btn-secondary">Learn More</button>
-      </div>
-      <div class="hero-stats">
-        <div class="stat"><span class="stat-num">20+</span><span class="stat-label">Tools</span></div>
-        <div class="stat-div"></div>
-        <div class="stat"><span class="stat-num">Free</span><span class="stat-label">Always</span></div>
-        <div class="stat-div"></div>
-        <div class="stat"><span class="stat-num">Fast</span><span class="stat-label">Instant</span></div>
-      </div>
-    </div>
-  </section>
 
-  <!-- Tools Preview Section -->
-  <section class="tools-section" id="tools">
-    <div class="section-header">
-      <h2>Popular Tools</h2>
-      <p>Pick a tool and start calculating</p>
     </div>
-    <div class="tools-grid">
-      <div class="tool-card" data-color="#FFD93D">
-        <div class="tool-icon">⚡</div>
-        <h3>Ohm's Law Calculator</h3>
-        <p>Solve V, I, R relationships instantly</p>
-        <span class="tool-tag">Basic</span>
-      </div>
-      <div class="tool-card" data-color="#6BCB77">
-        <div class="tool-icon">🔋</div>
-        <h3>Power Calculator</h3>
-        <p>Compute power in AC/DC circuits</p>
-        <span class="tool-tag">Power</span>
-      </div>
-      <div class="tool-card" data-color="#4D96FF">
-        <div class="tool-icon">〰️</div>
-        <h3>Impedance Calculator</h3>
-        <p>RLC series &amp; parallel impedance</p>
-        <span class="tool-tag">AC</span>
-      </div>
-      <div class="tool-card" data-color="#FF6B6B">
-        <div class="tool-icon">📡</div>
-        <h3>Transformer Calculator</h3>
-        <p>Turns ratio, voltage &amp; current</p>
-        <span class="tool-tag">Magnetics</span>
-      </div>
-      <div class="tool-card" data-color="#C77DFF">
-        <div class="tool-icon">🌊</div>
-        <h3>Filter Designer</h3>
-        <p>Low-pass, high-pass, band-pass</p>
-        <span class="tool-tag">Signal</span>
-      </div>
-      <div class="tool-card" data-color="#FF9F43">
-        <div class="tool-icon">🔢</div>
-        <h3>Unit Converter</h3>
-        <p>Convert electrical units instantly</p>
-        <span class="tool-tag">Utility</span>
-      </div>
-    </div>
-  </section>
+  </div>
 
-  <!-- Spark trail cursor element -->
+  <!-- ═══════════════════════════════════════════════════════════
+       VIEW 2 — REGISTER
+       ═══════════════════════════════════════════════════════════ -->
+  <div id="registerView" class="view">
+    <div class="auth-card">
+
+      <div class="auth-logo">
+        <span class="logo-e">e</span><span class="logo-spark">Spark</span>
+        <span class="logo-sub">Engineering Tools</span>
+      </div>
+
+      <h2 class="auth-title">Create your account</h2>
+      <p class="auth-subtitle">Join thousands of engineers</p>
+
+      <!-- Google Sign-Up (same SDK, same callback) -->
+      <div id="googleRegisterBtn" class="google-btn-wrap"></div>
+
+      <div class="auth-divider"><span>or sign up with email</span></div>
+
+      <form id="registerForm" class="auth-form" novalidate>
+        <div class="form-group">
+          <label class="form-label" for="regName">Full Name</label>
+          <input type="text" id="regName" class="form-input"
+                 placeholder="Jane Doe" autocomplete="name" />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="regEmail">Email</label>
+          <input type="email" id="regEmail" class="form-input"
+                 placeholder="you@example.com" autocomplete="email" />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="regPassword">Password</label>
+          <input type="password" id="regPassword" class="form-input"
+                 placeholder="At least 8 characters" autocomplete="new-password" />
+        </div>
+        <div id="registerError" class="auth-error"></div>
+        <button type="submit" class="btn-primary btn-full">Create Account ⚡</button>
+      </form>
+
+      <p class="auth-switch">
+        Already have an account?
+        <button type="button" class="link-btn link-accent" id="toLoginBtn">Sign in</button>
+      </p>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       VIEW 3 — DASHBOARD
+       ═══════════════════════════════════════════════════════════ -->
+  <div id="dashView" class="view dash-view">
+
+    <!-- Top Bar -->
+    <header class="dash-topbar">
+      <div class="dash-logo">
+        <span class="logo-e">e</span><span class="logo-spark">Spark</span>
+        <span class="logo-sub">Engineering Tools</span>
+      </div>
+
+      <div class="dash-search">
+        <span class="search-icon">⚡</span>
+        <input type="text" id="toolSearch" class="search-input" placeholder="Search tools…" />
+      </div>
+
+      <div class="dash-user-area">
+        <div class="dash-user-info">
+          <img id="userAvatar" class="user-avatar" src="" alt="" />
+          <span id="userNameLabel" class="user-name-label"></span>
+        </div>
+        <button id="logoutBtn" class="btn-signout">Sign out</button>
+      </div>
+    </header>
+
+    <!-- Body: sidebar + main -->
+    <div class="dash-body">
+
+      <!-- Sidebar -->
+      <aside class="dash-sidebar">
+        <nav class="sidebar-nav" id="sidebarNav">
+          <button class="nav-item active" data-cat="all">
+            <span class="nav-icon">⚡</span><span>All Tools</span>
+          </button>
+          <button class="nav-item" data-cat="basic">
+            <span class="nav-icon">📐</span><span>Basic</span>
+          </button>
+          <button class="nav-item" data-cat="power">
+            <span class="nav-icon">🔋</span><span>Power</span>
+          </button>
+          <button class="nav-item" data-cat="ac">
+            <span class="nav-icon">〰️</span><span>AC / Impedance</span>
+          </button>
+          <button class="nav-item" data-cat="magnetics">
+            <span class="nav-icon">📡</span><span>Magnetics</span>
+          </button>
+          <button class="nav-item" data-cat="signal">
+            <span class="nav-icon">🌊</span><span>Signal</span>
+          </button>
+          <button class="nav-item" data-cat="utility">
+            <span class="nav-icon">🔢</span><span>Utility</span>
+          </button>
+        </nav>
+      </aside>
+
+      <!-- Main content -->
+      <main class="dash-main">
+        <div class="dash-welcome">
+          <h1 id="welcomeMsg">Good morning! 👋</h1>
+          <p class="welcome-sub">Pick a tool to get started</p>
+        </div>
+        <div class="tools-grid" id="toolsGrid"></div>
+      </main>
+
+    </div>
+  </div>
+
+  <!-- Custom cursor -->
   <div class="cursor-spark" id="cursorSpark"></div>
-  <div class="cursor-dot" id="cursorDot"></div>
+  <div class="cursor-dot"   id="cursorDot"></div>
 
+  <!-- Google Identity Services SDK -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
   <script src="app.js"></script>
+
 </body>
 </html>

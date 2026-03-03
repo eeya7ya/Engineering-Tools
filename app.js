@@ -1,130 +1,16 @@
 'use strict';
-
 /* =====================================================
-   eSpark Engineering Tools — Interactive JS
+   eSpark Engineering Tools — App JS
+   Single-page controller: canvas · cursor · auth · dashboard
    ===================================================== */
 
-// ── Mouse tracking ──────────────────────────────────
-const mouse = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
-const smoothMouse = { x: mouse.x, y: mouse.y };
-
-document.addEventListener('mousemove', e => {
-  mouse.x = e.clientX;
-  mouse.y = e.clientY;
-});
-
-// ── Custom cursor ────────────────────────────────────
-const cursorDot   = document.getElementById('cursorDot');
-const cursorSpark = document.getElementById('cursorSpark');
-let sparkX = mouse.x, sparkY = mouse.y;
-
-function updateCursor() {
-  // Dot follows instantly
-  cursorDot.style.left = mouse.x + 'px';
-  cursorDot.style.top  = mouse.y + 'px';
-
-  // Outer ring lags behind (lerp)
-  sparkX += (mouse.x - sparkX) * 0.14;
-  sparkY += (mouse.y - sparkY) * 0.14;
-  cursorSpark.style.left = sparkX + 'px';
-  cursorSpark.style.top  = sparkY + 'px';
-
-  requestAnimationFrame(updateCursor);
-}
-updateCursor();
-
-// Cursor grows on hoverable elements
-document.querySelectorAll('button, a, .tool-card').forEach(el => {
-  el.addEventListener('mouseenter', () => {
-    cursorSpark.style.width  = '52px';
-    cursorSpark.style.height = '52px';
-    cursorSpark.style.borderColor = 'var(--accent2)';
-    cursorDot.style.background = 'var(--accent2)';
-  });
-  el.addEventListener('mouseleave', () => {
-    cursorSpark.style.width  = '32px';
-    cursorSpark.style.height = '32px';
-    cursorSpark.style.borderColor = 'var(--accent1)';
-    cursorDot.style.background = 'var(--accent1)';
-  });
-});
-
-// ── Spark trail particles ────────────────────────────
-const sparkColors = ['#FF6B35', '#FFD93D', '#4D96FF', '#6BCB77', '#C77DFF'];
-let lastParticleTime = 0;
-
-document.addEventListener('mousemove', e => {
-  const now = Date.now();
-  if (now - lastParticleTime < 40) return;  // throttle: ~25 particles/sec
-  lastParticleTime = now;
-
-  const p = document.createElement('div');
-  p.className = 'spark-particle';
-  const color = sparkColors[Math.floor(Math.random() * sparkColors.length)];
-  p.style.cssText = `
-    left: ${e.clientX}px;
-    top:  ${e.clientY}px;
-    background: ${color};
-    width:  ${4 + Math.random() * 6}px;
-    height: ${4 + Math.random() * 6}px;
-    transform: translate(-50%, -50%) translate(${(Math.random()-0.5)*20}px, ${(Math.random()-0.5)*20}px);
-  `;
-  document.body.appendChild(p);
-  setTimeout(() => p.remove(), 620);
-});
-
-// ── Character mouse parallax ─────────────────────────
-const characters = document.querySelectorAll('.character');
-
-// Set initial CSS translate based on data attributes
-characters.forEach(ch => {
-  const ox = parseFloat(ch.dataset.offsetX) || 0;
-  const oy = parseFloat(ch.dataset.offsetY) || 0;
-  ch.style.transform = `translate(calc(-50% + ${ox}px), calc(-50% + ${oy}px))`;
-  ch._ox = ox;
-  ch._oy = oy;
-  ch._cx = ox;  // current animated x
-  ch._cy = oy;
-});
-
-function animateCharacters() {
-  const cx = window.innerWidth  / 2;
-  const cy = window.innerHeight / 2;
-  const dx = (mouse.x - cx) / cx;  // -1 … +1
-  const dy = (mouse.y - cy) / cy;
-
-  characters.forEach(ch => {
-    const speed  = parseFloat(ch.dataset.speed) || 0.05;
-    const targetX = ch._ox + dx * 60;
-    const targetY = ch._oy + dy * 40;
-
-    // lerp toward target
-    ch._cx += (targetX - ch._cx) * speed * 2.5;
-    ch._cy += (targetY - ch._cy) * speed * 2.5;
-
-    ch.style.transform =
-      `translate(calc(-50% + ${ch._cx}px), calc(-50% + ${ch._cy}px))`;
-
-    // Eye pupils look toward mouse
-    const eyes = ch.querySelectorAll('.pupil');
-    eyes.forEach(pupil => {
-      const rect   = pupil.closest('.eye').getBoundingClientRect();
-      const ex     = rect.left + rect.width / 2;
-      const ey     = rect.top  + rect.height / 2;
-      const angle  = Math.atan2(mouse.y - ey, mouse.x - ex);
-      const dist   = 3;
-      pupil.style.transform =
-        `translate(${Math.cos(angle)*dist}px, ${Math.sin(angle)*dist}px)`;
-    });
-  });
-
-  requestAnimationFrame(animateCharacters);
-}
-animateCharacters();
-
-// ── Background canvas: floating circuit nodes ────────
+// ════════════════════════════════════════════════════
+//  CANVAS BACKGROUND
+// ════════════════════════════════════════════════════
 const canvas  = document.getElementById('bgCanvas');
 const ctx     = canvas.getContext('2d');
+const mouse   = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+const COLORS  = ['#FF6B35', '#FFD93D', '#4D96FF', '#6BCB77', '#C77DFF'];
 
 function resizeCanvas() {
   canvas.width  = window.innerWidth;
@@ -132,98 +18,371 @@ function resizeCanvas() {
 }
 resizeCanvas();
 window.addEventListener('resize', resizeCanvas);
+document.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
 
-// Node class
-class Node {
+class BgNode {
   constructor() { this.reset(true); }
-
   reset(init = false) {
-    this.x  = Math.random() * canvas.width;
-    this.y  = init ? Math.random() * canvas.height : canvas.height + 20;
-    this.r  = 2 + Math.random() * 3;
-    this.vx = (Math.random() - 0.5) * 0.3;
-    this.vy = -(0.2 + Math.random() * 0.5);
-    this.alpha  = 0;
-    this.targetAlpha = 0.15 + Math.random() * 0.25;
-    this.color  = sparkColors[Math.floor(Math.random() * sparkColors.length)];
-    this.pulse  = Math.random() * Math.PI * 2;
-    this.pulseSpeed = 0.02 + Math.random() * 0.03;
+    this.x    = Math.random() * canvas.width;
+    this.y    = init ? Math.random() * canvas.height : canvas.height + 20;
+    this.r    = 2 + Math.random() * 2.5;
+    this.vx   = (Math.random() - 0.5) * 0.25;
+    this.vy   = -(0.15 + Math.random() * 0.4);
+    this.alpha       = 0;
+    this.targetAlpha = 0.06 + Math.random() * 0.12;
+    this.color       = COLORS[Math.floor(Math.random() * COLORS.length)];
+    this.pulse       = Math.random() * Math.PI * 2;
+    this.pulseSpeed  = 0.02 + Math.random() * 0.02;
   }
-
   update() {
     this.x += this.vx;
     this.y += this.vy;
     this.pulse += this.pulseSpeed;
-
-    // Mouse repulsion — nodes shy away
-    const mdx = this.x - mouse.x;
-    const mdy = this.y - mouse.y;
-    const md  = Math.sqrt(mdx*mdx + mdy*mdy);
-    if (md < 120) {
-      const force = (120 - md) / 120 * 0.8;
-      this.x += (mdx / md) * force;
-      this.y += (mdy / md) * force;
-    }
-
-    if (this.alpha < this.targetAlpha) this.alpha += 0.005;
+    if (this.alpha < this.targetAlpha) this.alpha += 0.003;
     if (this.y < -20) this.reset();
   }
-
   draw() {
-    const pulse = 0.7 + 0.3 * Math.sin(this.pulse);
+    const p = 0.7 + 0.3 * Math.sin(this.pulse);
     ctx.beginPath();
-    ctx.arc(this.x, this.y, this.r * pulse, 0, Math.PI * 2);
-    ctx.fillStyle = this.color + Math.round(this.alpha * 255).toString(16).padStart(2,'0');
+    ctx.arc(this.x, this.y, this.r * p, 0, Math.PI * 2);
+    ctx.fillStyle = this.color + Math.round(this.alpha * 255).toString(16).padStart(2, '0');
     ctx.fill();
   }
 }
 
-// Connections between close nodes
-function drawConnections(nodes) {
-  for (let i = 0; i < nodes.length; i++) {
-    for (let j = i + 1; j < nodes.length; j++) {
-      const dx = nodes[i].x - nodes[j].x;
-      const dy = nodes[i].y - nodes[j].y;
-      const d  = Math.sqrt(dx*dx + dy*dy);
-      if (d < 130) {
+const bgNodes = Array.from({ length: 60 }, () => new BgNode());
+
+function renderCanvas() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  // Draw connection lines
+  for (let i = 0; i < bgNodes.length; i++) {
+    for (let j = i + 1; j < bgNodes.length; j++) {
+      const dx = bgNodes[i].x - bgNodes[j].x;
+      const dy = bgNodes[i].y - bgNodes[j].y;
+      const d  = Math.sqrt(dx * dx + dy * dy);
+      if (d < 120) {
         ctx.beginPath();
-        ctx.moveTo(nodes[i].x, nodes[i].y);
-        ctx.lineTo(nodes[j].x, nodes[j].y);
-        const alpha = (1 - d / 130) * 0.08;
-        ctx.strokeStyle = `rgba(100,130,180,${alpha})`;
+        ctx.moveTo(bgNodes[i].x, bgNodes[i].y);
+        ctx.lineTo(bgNodes[j].x, bgNodes[j].y);
+        ctx.strokeStyle = `rgba(77,150,255,${(1 - d / 120) * 0.07})`;
         ctx.lineWidth = 1;
         ctx.stroke();
       }
     }
   }
-}
-
-const NODES = Array.from({ length: 80 }, () => new Node());
-
-function renderCanvas() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  NODES.forEach(n => n.update());
-  drawConnections(NODES);
-  NODES.forEach(n => n.draw());
+  bgNodes.forEach(n => { n.update(); n.draw(); });
   requestAnimationFrame(renderCanvas);
 }
 renderCanvas();
 
-// ── Tool cards: set CSS var for top-border color ─────
-document.querySelectorAll('.tool-card').forEach(card => {
-  const color = card.dataset.color;
-  if (color) card.style.setProperty('--card-color', color);
+// ════════════════════════════════════════════════════
+//  CUSTOM CURSOR
+// ════════════════════════════════════════════════════
+const cursorDot   = document.getElementById('cursorDot');
+const cursorSpark = document.getElementById('cursorSpark');
+let sparkX = mouse.x, sparkY = mouse.y;
+
+function updateCursor() {
+  cursorDot.style.left = mouse.x + 'px';
+  cursorDot.style.top  = mouse.y + 'px';
+  sparkX += (mouse.x - sparkX) * 0.14;
+  sparkY += (mouse.y - sparkY) * 0.14;
+  cursorSpark.style.left = sparkX + 'px';
+  cursorSpark.style.top  = sparkY + 'px';
+  requestAnimationFrame(updateCursor);
+}
+updateCursor();
+
+function attachCursorHover(el) {
+  el.addEventListener('mouseenter', () => {
+    cursorSpark.style.width  = '52px';
+    cursorSpark.style.height = '52px';
+    cursorSpark.style.borderColor = 'var(--accent2)';
+    cursorDot.style.background    = 'var(--accent2)';
+  });
+  el.addEventListener('mouseleave', () => {
+    cursorSpark.style.width  = '32px';
+    cursorSpark.style.height = '32px';
+    cursorSpark.style.borderColor = 'var(--accent1)';
+    cursorDot.style.background    = 'var(--accent1)';
+  });
+}
+
+// Spark trail particles
+let lastParticleMs = 0;
+document.addEventListener('mousemove', e => {
+  const now = Date.now();
+  if (now - lastParticleMs < 45) return;
+  lastParticleMs = now;
+  const p = document.createElement('div');
+  p.className = 'spark-particle';
+  const color = COLORS[Math.floor(Math.random() * COLORS.length)];
+  const size  = 4 + Math.random() * 5;
+  p.style.cssText = [
+    `left:${e.clientX}px`,
+    `top:${e.clientY}px`,
+    `background:${color}`,
+    `width:${size}px`,
+    `height:${size}px`,
+  ].join(';');
+  document.body.appendChild(p);
+  setTimeout(() => p.remove(), 620);
 });
 
-// ── Entrance animation: hero content fades up ────────
-window.addEventListener('load', () => {
-  const content = document.querySelector('.hero-content');
-  if (!content) return;
-  content.style.opacity = '0';
-  content.style.transform = 'translateY(30px)';
-  content.style.transition = 'opacity 0.9s ease, transform 0.9s ease';
-  requestAnimationFrame(() => {
-    content.style.opacity  = '1';
-    content.style.transform = 'translateY(0)';
+// ════════════════════════════════════════════════════
+//  VIEW MANAGER
+// ════════════════════════════════════════════════════
+function showView(id) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ════════════════════════════════════════════════════
+//  AUTH STATE
+// ════════════════════════════════════════════════════
+function saveSession(token, user) {
+  localStorage.setItem('espark_token', token);
+  localStorage.setItem('espark_user',  JSON.stringify(user));
+}
+function clearSession() {
+  localStorage.removeItem('espark_token');
+  localStorage.removeItem('espark_user');
+}
+function getToken()  { return localStorage.getItem('espark_token'); }
+function getSavedUser() {
+  try { return JSON.parse(localStorage.getItem('espark_user')); } catch { return null; }
+}
+
+// ════════════════════════════════════════════════════
+//  API HELPERS
+// ════════════════════════════════════════════════════
+async function api(path, opts = {}) {
+  const token = getToken();
+  const res = await fetch(path, {
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+    ...opts,
   });
+  return res.json();
+}
+
+// ════════════════════════════════════════════════════
+//  GOOGLE IDENTITY SERVICES
+// ════════════════════════════════════════════════════
+async function initGoogle(googleClientId) {
+  if (!googleClientId || !window.google) return;
+
+  google.accounts.id.initialize({
+    client_id:            googleClientId,
+    callback:             handleGoogleCredential,
+    auto_select:          false,
+    cancel_on_tap_outside: true,
+  });
+
+  // Render Google's official button in both auth views
+  const btnCfg = { theme: 'outline', size: 'large', text: 'continue_with', width: 340, shape: 'rectangular' };
+  const loginEl  = document.getElementById('googleLoginBtn');
+  const regEl    = document.getElementById('googleRegisterBtn');
+  if (loginEl)  google.accounts.id.renderButton(loginEl,  btnCfg);
+  if (regEl)    google.accounts.id.renderButton(regEl,    btnCfg);
+}
+
+async function handleGoogleCredential(response) {
+  showAuthError('loginError', '');
+  const data = await api('/api/auth/google', {
+    method: 'POST',
+    body: JSON.stringify({ credential: response.credential }),
+  });
+  if (data.error) { showAuthError('loginError', data.error); return; }
+  saveSession(data.token, data.user);
+  loadDashboard(data.user);
+}
+
+// ════════════════════════════════════════════════════
+//  AUTH FORMS
+// ════════════════════════════════════════════════════
+function showAuthError(elId, msg) {
+  const el = document.getElementById(elId);
+  if (el) el.textContent = msg;
+}
+
+document.getElementById('loginForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  showAuthError('loginError', '');
+  const email    = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  if (!email || !password) { showAuthError('loginError', 'Please fill in all fields'); return; }
+
+  const data = await api('/api/auth/login', {
+    method: 'POST',
+    body: JSON.stringify({ email, password }),
+  });
+  if (data.error) { showAuthError('loginError', data.error); return; }
+  saveSession(data.token, data.user);
+  loadDashboard(data.user);
 });
+
+document.getElementById('registerForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  showAuthError('registerError', '');
+  const name     = document.getElementById('regName').value.trim();
+  const email    = document.getElementById('regEmail').value.trim();
+  const password = document.getElementById('regPassword').value;
+  if (!name || !email || !password) { showAuthError('registerError', 'Please fill in all fields'); return; }
+
+  const data = await api('/api/auth/register', {
+    method: 'POST',
+    body: JSON.stringify({ name, email, password }),
+  });
+  if (data.error) { showAuthError('registerError', data.error); return; }
+  saveSession(data.token, data.user);
+  loadDashboard(data.user);
+});
+
+// Toggle between login ↔ register
+document.getElementById('toRegisterBtn').addEventListener('click', () => showView('registerView'));
+document.getElementById('toLoginBtn').addEventListener('click',    () => showView('loginView'));
+
+// Logout
+document.getElementById('logoutBtn').addEventListener('click', () => {
+  clearSession();
+  google.accounts?.id?.disableAutoSelect?.();
+  showView('loginView');
+});
+
+// ════════════════════════════════════════════════════
+//  TOOLS DATA
+// ════════════════════════════════════════════════════
+const TOOLS = [
+  { id: 'ohm',         icon: '⚡',  name: "Ohm's Law Calculator",   desc: 'Solve V, I, R relationships instantly',   tag: 'Basic',     cat: 'basic',     color: '#FFD93D' },
+  { id: 'power',       icon: '🔋',  name: 'Power Calculator',        desc: 'Compute power in AC/DC circuits',          tag: 'Power',     cat: 'power',     color: '#6BCB77' },
+  { id: 'impedance',   icon: '〰️', name: 'Impedance Calculator',    desc: 'RLC series & parallel impedance',          tag: 'AC',        cat: 'ac',        color: '#4D96FF' },
+  { id: 'transformer', icon: '📡',  name: 'Transformer Calculator',  desc: 'Turns ratio, voltage & current',           tag: 'Magnetics', cat: 'magnetics', color: '#FF6B6B' },
+  { id: 'filter',      icon: '🌊',  name: 'Filter Designer',         desc: 'Low-pass, high-pass, band-pass filters',   tag: 'Signal',    cat: 'signal',    color: '#C77DFF' },
+  { id: 'converter',   icon: '🔢',  name: 'Unit Converter',          desc: 'Convert electrical units instantly',        tag: 'Utility',   cat: 'utility',   color: '#FF9F43' },
+];
+
+// ════════════════════════════════════════════════════
+//  DASHBOARD
+// ════════════════════════════════════════════════════
+function buildToolsGrid(tools) {
+  const grid = document.getElementById('toolsGrid');
+  grid.innerHTML = tools.map(t => `
+    <div class="tool-card" data-cat="${t.cat}" data-id="${t.id}" style="--card-color:${t.color}">
+      <span class="tool-icon">${t.icon}</span>
+      <h3>${t.name}</h3>
+      <p>${t.desc}</p>
+      <span class="tool-tag">${t.tag}</span>
+    </div>
+  `).join('');
+
+  // Attach cursor hover to new cards
+  grid.querySelectorAll('.tool-card').forEach(attachCursorHover);
+}
+
+function filterTools(cat) {
+  const query = document.getElementById('toolSearch').value.toLowerCase();
+  document.querySelectorAll('.tool-card').forEach(card => {
+    const matchCat  = cat === 'all' || card.dataset.cat === cat;
+    const matchSearch = !query || card.querySelector('h3').textContent.toLowerCase().includes(query)
+                                || card.querySelector('p').textContent.toLowerCase().includes(query);
+    card.classList.toggle('hidden-card', !(matchCat && matchSearch));
+  });
+}
+
+function getGreeting() {
+  const h = new Date().getHours();
+  if (h < 12) return 'Good morning';
+  if (h < 18) return 'Good afternoon';
+  return 'Good evening';
+}
+
+function loadDashboard(user) {
+  // Populate user info
+  const nameLabel = document.getElementById('userNameLabel');
+  const avatar    = document.getElementById('userAvatar');
+  const welcome   = document.getElementById('welcomeMsg');
+
+  nameLabel.textContent = user.name || user.email;
+  welcome.textContent   = `${getGreeting()}, ${user.name?.split(' ')[0] || 'Engineer'}! 👋`;
+
+  if (user.avatar) {
+    avatar.src   = user.avatar;
+    avatar.style.display = 'block';
+  }
+
+  // Build tools
+  buildToolsGrid(TOOLS);
+
+  // Sidebar filter
+  document.querySelectorAll('.nav-item').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      filterTools(btn.dataset.cat);
+    });
+    attachCursorHover(btn);
+  });
+
+  // Search
+  document.getElementById('toolSearch').addEventListener('input', () => {
+    const activeCat = document.querySelector('.nav-item.active')?.dataset.cat || 'all';
+    filterTools(activeCat);
+  });
+
+  // Cursor on interactive elements
+  document.querySelectorAll('button, .btn-signout').forEach(attachCursorHover);
+
+  showView('dashView');
+}
+
+// ════════════════════════════════════════════════════
+//  INIT
+// ════════════════════════════════════════════════════
+async function init() {
+  // Attach cursor hover to initial auth elements
+  document.querySelectorAll('button, a, .form-input').forEach(attachCursorHover);
+
+  // Fetch public config (Google client ID)
+  let googleClientId = null;
+  try {
+    const cfg = await api('/api/config');
+    googleClientId = cfg.googleClientId;
+  } catch {
+    // Running without backend — skip Google OAuth
+  }
+
+  // Wait for Google SDK to load (it's async)
+  if (googleClientId) {
+    const waitForGoogle = new Promise(resolve => {
+      if (window.google) { resolve(); return; }
+      const check = setInterval(() => {
+        if (window.google) { clearInterval(check); resolve(); }
+      }, 100);
+      setTimeout(() => { clearInterval(check); resolve(); }, 5000);
+    });
+    await waitForGoogle;
+    initGoogle(googleClientId);
+  }
+
+  // Check existing session
+  const token = getToken();
+  const user  = getSavedUser();
+  if (token && user) {
+    // Verify token is still valid
+    try {
+      const data = await api('/api/auth/me');
+      if (data.user) {
+        loadDashboard(data.user);
+        return;
+      }
+    } catch { /* invalid token, fall through to login */ }
+    clearSession();
+  }
+
+  showView('loginView');
+}
+
+window.addEventListener('DOMContentLoaded', init);
