@@ -32,6 +32,17 @@ async function initDB() {
   console.log('[db] schema ready');
 }
 
+// ─── DB Readiness (safe for serverless cold starts) ───────────────────────
+const _dbReady = initDB().catch(err => {
+  console.error('[db] init error:', err.message);
+});
+
+// Block API requests until DB is initialised
+app.use('/api', async (_req, res, next) => {
+  try { await _dbReady; next(); }
+  catch { res.status(503).json({ error: 'Database temporarily unavailable' }); }
+});
+
 // ─── Helpers ──────────────────────────────────────────────────────────────
 function signToken(user) {
   return jwt.sign(
@@ -150,9 +161,12 @@ app.get('/api/auth/me', requireAuth, async (req, res) => {
 app.use(express.static(__dirname));
 app.get('*', (_req, res) => res.sendFile(join(__dirname, 'index.html')));
 
-// ─── Start ────────────────────────────────────────────────────────────────
-const PORT = process.env.PORT || 3000;
-initDB()
-  .then(() => app.listen(PORT, () =>
-    console.log(`eSpark running → http://localhost:${PORT}`)))
-  .catch(err => { console.error('DB init failed:', err); process.exit(1); });
+// ─── Export for Vercel serverless ─────────────────────────────────────────
+export default app;
+
+// ─── Local dev: start Express server ──────────────────────────────────────
+if (!process.env.VERCEL) {
+  _dbReady.then(() => app.listen(process.env.PORT || 3000, () =>
+    console.log(`eSpark running → http://localhost:${process.env.PORT || 3000}`)
+  )).catch(err => { console.error('DB init failed:', err); process.exit(1); });
+}
