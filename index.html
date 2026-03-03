@@ -41,7 +41,6 @@
                 <div class="geo-mouth"></div>
               </div>
             </div>
-            <span class="geo-label">Triangle</span>
           </div>
 
           <!-- Semi-circle -->
@@ -56,7 +55,6 @@
                 <div class="geo-mouth"></div>
               </div>
             </div>
-            <span class="geo-label">Semi-circle</span>
           </div>
 
           <!-- Rectangle -->
@@ -71,7 +69,6 @@
                 <div class="geo-mouth grin-mouth"></div>
               </div>
             </div>
-            <span class="geo-label">Rectangle</span>
           </div>
 
           <!-- Diamond -->
@@ -86,7 +83,6 @@
                 <div class="geo-mouth"></div>
               </div>
             </div>
-            <span class="geo-label">Diamond</span>
           </div>
 
           <!-- Square -->
@@ -101,7 +97,6 @@
                 <div class="geo-mouth grin-mouth"></div>
               </div>
             </div>
-            <span class="geo-label">Square</span>
           </div>
 
           <!-- Pentagon -->
@@ -116,7 +111,6 @@
                 <div class="geo-mouth"></div>
               </div>
             </div>
-            <span class="geo-label">Pentagon</span>
           </div>
 
         </div><!-- /.shapes-grid -->
@@ -136,7 +130,17 @@
           </div>
 
           <!-- Google Sign-In -->
-          <div id="googleLoginBtn" class="google-btn-wrap"></div>
+          <button type="button" class="btn-google" id="googleSignInBtn">
+            <svg width="20" height="20" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
+              <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908C16.658 14.013 17.64 11.705 17.64 9.2z" fill="#4285F4"/>
+              <path d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z" fill="#34A853"/>
+              <path d="M3.964 10.707A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.707V4.961H.957C.347 6.175 0 7.55 0 9s.348 2.825.957 4.039l3.007-2.332z" fill="#FBBC05"/>
+              <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.961L3.964 6.293C4.672 4.166 6.656 3.58 9 3.58z" fill="#EA4335"/>
+            </svg>
+            Sign in with Google
+          </button>
+          <!-- Hidden SDK-rendered button (used when backend provides client ID) -->
+          <div id="googleLoginBtn" style="display:none"></div>
 
           <div class="login-divider"><span>or</span></div>
 
@@ -156,12 +160,6 @@
             <div id="loginError" class="auth-error"></div>
             <button type="submit" class="btn-primary btn-login">Sign In ⚡</button>
           </form>
-
-          <div class="login-footer">
-            <p>Don't have an account?
-              <button type="button" class="register-link" id="toRegisterBtn">Create one free</button>
-            </p>
-          </div>
 
         </div><!-- /.login-card -->
       </div><!-- /.login-panel -->

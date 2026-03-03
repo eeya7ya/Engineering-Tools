@@ -73,8 +73,14 @@ body {
 }
 .logo-e     { font-size: 1.5rem; font-weight: 900; color: var(--accent1); }
 .logo-spark { font-size: 1.5rem; font-weight: 900; color: var(--dark); }
+
+/* Larger logo in the shapes panel & login card */
+.shapes-brand .logo-e,
+.shapes-brand .logo-spark,
+.login-card .logo-e,
+.login-card .logo-spark  { font-size: 2.2rem; }
 .logo-sub {
-  font-size: .72rem;
+  font-size: .82rem;
   font-weight: 600;
   color: var(--text-muted);
   margin-left: 8px;
@@ -179,7 +185,7 @@ body {
 .shapes-brand .logo { margin-bottom: 10px; justify-content: center; }
 .shapes-brand .logo-spark { color: var(--white); }
 .shapes-tagline {
-  font-size: .88rem;
+  font-size: 1.05rem;
   color: rgba(255,255,255,.38);
   font-weight: 500;
   letter-spacing: .02em;
@@ -188,10 +194,10 @@ body {
 /* ── 3×2 Shape Grid ─────────────────────────────── */
 .shapes-grid {
   display: grid;
-  grid-template-columns: repeat(3, 120px);
+  grid-template-columns: repeat(3, 152px);
   grid-template-rows:    repeat(2, auto);
-  column-gap: 24px;
-  row-gap: 36px;
+  column-gap: 28px;
+  row-gap: 40px;
   justify-items: center;
   align-items: end;
 }
@@ -226,37 +232,37 @@ body {
 .shape-bg { display: block; width: 100%; height: 100%; }
 
 /* ── Per-shape sizes & colours ──────────────────── */
-#geo-tri .shape-wrap     { width: 100px; height: 90px;  }
+#geo-tri .shape-wrap     { width: 128px; height: 116px; }
 .tri-bg {
   background: linear-gradient(160deg, #FFD93D, #FF6B35);
   clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
 }
 
-#geo-semi .shape-wrap    { width: 110px; height: 55px;  }
+#geo-semi .shape-wrap    { width: 140px; height: 70px;  }
 .semi-bg {
   background: linear-gradient(135deg, #C77DFF, #7B2FBE);
-  border-radius: 55px 55px 0 0;
+  border-radius: 70px 70px 0 0;
 }
 
-#geo-rect .shape-wrap    { width: 68px;  height: 104px; }
+#geo-rect .shape-wrap    { width: 88px;  height: 134px; }
 .rect-bg {
   background: linear-gradient(160deg, #4D96FF, #2563EB);
-  border-radius: 10px;
+  border-radius: 12px;
 }
 
-#geo-diamond .shape-wrap { width: 90px;  height: 90px;  }
+#geo-diamond .shape-wrap { width: 116px; height: 116px; }
 .diamond-bg {
   background: linear-gradient(135deg, #6BCB77, #2E7D32);
   clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
 }
 
-#geo-square .shape-wrap  { width: 90px;  height: 90px;  }
+#geo-square .shape-wrap  { width: 116px; height: 116px; }
 .square-bg {
   background: linear-gradient(135deg, #FFD93D, #FF9F43);
-  border-radius: 13px;
+  border-radius: 16px;
 }
 
-#geo-pent .shape-wrap    { width: 94px;  height: 90px;  }
+#geo-pent .shape-wrap    { width: 120px; height: 116px; }
 .pent-bg {
   background: linear-gradient(135deg, #FF6B6B, #C0392B);
   clip-path: polygon(50% 0%, 100% 38%, 81% 100%, 19% 100%, 0% 38%);
@@ -343,6 +349,25 @@ body {
 .geo-char.excited  .geo-label  { color: rgba(255,255,255,.78); }
 .geo-char.surprised .geo-label { color: rgba(255,255,255,.6);  }
 
+/* ── Wondering state (mouse approaching login card) ─ */
+@keyframes geoWonder {
+  0%   { transform: translateY(0px)   rotate(0deg);  }
+  20%  { transform: translateY(-8px)  rotate(6deg);  }
+  50%  { transform: translateY(-16px) rotate(5deg);  }
+  75%  { transform: translateY(-10px) rotate(8deg);  }
+  100% { transform: translateY(0px)   rotate(0deg);  }
+}
+.geo-char.wondering {
+  animation: geoWonder 2.2s ease-in-out infinite !important;
+  transform-origin: bottom center;
+}
+.geo-char.wondering .geo-eye   { width: 19px; height: 23px; }
+.geo-char.wondering .geo-pupil { width: 9px;  height: 9px;  }
+.geo-char.wondering .geo-mouth {
+  width: 13px; height: 13px;
+  border-radius: 50%;
+}
+
 /* ══════════════════════════════════════════════════
    RIGHT PANEL — Login Card
    ══════════════════════════════════════════════════ */
@@ -426,6 +451,32 @@ body {
   display: flex;
   justify-content: center;
   margin: 4px 0;
+}
+
+/* ── Google Sign-In button ──────────────────────── */
+.btn-google {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  padding: 13px 20px;
+  background: var(--white);
+  border: 1.5px solid #dadce0;
+  border-radius: 50px;
+  font-size: .97rem;
+  font-weight: 600;
+  font-family: inherit;
+  color: #3c4043;
+  cursor: none;
+  box-shadow: 0 1px 4px rgba(0,0,0,.1);
+  transition: background .2s, box-shadow .2s, border-color .2s, transform .2s;
+}
+.btn-google:hover {
+  background: #f8f9fa;
+  box-shadow: 0 4px 14px rgba(0,0,0,.15);
+  border-color: #bbb;
+  transform: translateY(-2px);
 }
 
 /* ── Divider ────────────────────────────────────── */

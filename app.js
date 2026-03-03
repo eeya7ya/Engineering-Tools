@@ -159,19 +159,32 @@ function animateGeoChars() {
       pupil.style.transform = `translate(${Math.cos(angle) * 3}px, ${Math.sin(angle) * 3}px)`;
     });
 
+    // Wondering zone: mouse approaching the card but not yet in nearCard zone
+    const distToCardLeft = Math.max(0, cardRect.left - mouse.x);
+    const mouseInCardYRange = mouse.y > cardRect.top - 200 && mouse.y < cardRect.bottom + 200;
+    const isWondering = !nearCard && distToCardLeft < 380 && mouseInCardYRange;
+
     // Expression state machine
     if (distToMouse < 88 && !nearCard) {
       if (!shape.classList.contains('surprised')) {
         shape.classList.add('surprised');
-        shape.classList.remove('excited');
+        shape.classList.remove('excited', 'wondering');
         const prev = surprisedCooldown.get(shape);
         if (prev) clearTimeout(prev);
         surprisedCooldown.set(shape, setTimeout(() => shape.classList.remove('surprised'), 480));
       }
     } else if (nearCard) {
-      if (!shape.classList.contains('surprised')) shape.classList.add('excited');
+      if (!shape.classList.contains('surprised')) {
+        shape.classList.add('excited');
+        shape.classList.remove('wondering');
+      }
+    } else if (isWondering) {
+      if (!shape.classList.contains('surprised')) {
+        shape.classList.add('wondering');
+        shape.classList.remove('excited');
+      }
     } else {
-      shape.classList.remove('excited');
+      shape.classList.remove('excited', 'wondering');
     }
   });
 
@@ -228,6 +241,7 @@ function initGoogle(googleClientId) {
     auto_select: false,
     cancel_on_tap_outside: true,
   });
+  window._googleInitialized = true;
   const btnCfg = { theme: 'outline', size: 'large', text: 'continue_with', width: 340 };
   const loginEl  = document.getElementById('googleLoginBtn');
   const regEl    = document.getElementById('googleRegisterBtn');
@@ -285,8 +299,18 @@ document.getElementById('registerForm').addEventListener('submit', async e => {
   loadDashboard(data.user);
 });
 
-document.getElementById('toRegisterBtn').addEventListener('click', () => showView('registerView'));
-document.getElementById('toLoginBtn').addEventListener('click',    () => showView('loginView'));
+const _toRegBtn = document.getElementById('toRegisterBtn');
+if (_toRegBtn) _toRegBtn.addEventListener('click', () => showView('registerView'));
+document.getElementById('toLoginBtn').addEventListener('click', () => showView('loginView'));
+
+document.getElementById('googleSignInBtn').addEventListener('click', () => {
+  setError('loginError', '');
+  if (window._googleInitialized && window.google) {
+    google.accounts.id.prompt();
+  } else {
+    setError('loginError', 'Google sign-in not configured — use email/password below.');
+  }
+});
 document.getElementById('logoutBtn').addEventListener('click', () => {
   clearSession();
   window.google?.accounts?.id?.disableAutoSelect?.();
@@ -375,7 +399,7 @@ function loadDashboard(user) {
 // ════════════════════════════════════════════════════
 async function init() {
   // Attach cursor hover to all interactive elements
-  document.querySelectorAll('button, a, .form-input, .geo-char').forEach(attachCursorHover);
+  document.querySelectorAll('button, a, .form-input, .geo-char, .btn-google').forEach(attachCursorHover);
 
   // Start geo-char animation loop
   animateGeoChars();
