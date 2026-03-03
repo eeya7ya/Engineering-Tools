@@ -297,6 +297,33 @@ function setError(elId, msg) {
   if (el) el.textContent = msg;
 }
 
+// Shock animation: Sign In button click triggers cute electric shake + shapes react
+document.querySelector('.btn-login').addEventListener('click', () => {
+  const btn = document.querySelector('.btn-login');
+  btn.classList.remove('btn-shock');
+  void btn.offsetWidth; // reflow to restart animation
+  btn.classList.add('btn-shock');
+  btn.addEventListener('animationend', () => btn.classList.remove('btn-shock'), { once: true });
+
+  // All shapes react with "surprised" expression simultaneously
+  geoChars.forEach(shape => {
+    shape.classList.remove('surprised', 'excited');
+    void shape.offsetWidth;
+    shape.classList.add('surprised');
+    const prev = surprisedCooldown.get(shape);
+    if (prev) clearTimeout(prev);
+    surprisedCooldown.set(shape, setTimeout(() => shape.classList.remove('surprised'), 480));
+  });
+});
+
+// Google fallback button: show feedback when backend/OAuth is not configured
+document.getElementById('googleLoginFallback')?.addEventListener('click', () => {
+  setError('loginError', 'Google Sign In requires backend configuration — use email & password for now.');
+});
+document.getElementById('googleRegisterFallback')?.addEventListener('click', () => {
+  setError('registerError', 'Google Sign Up requires backend configuration — use email & password for now.');
+});
+
 document.getElementById('loginForm').addEventListener('submit', async e => {
   e.preventDefault();
   setError('loginError', '');
@@ -328,7 +355,7 @@ document.getElementById('registerForm').addEventListener('submit', async e => {
   loadDashboard(data.user);
 });
 
-document.getElementById('toRegisterBtn').addEventListener('click', () => showView('registerView'));
+document.getElementById('toRegisterBtn')?.addEventListener('click', () => showView('registerView'));
 document.getElementById('toLoginBtn').addEventListener('click',    () => showView('loginView'));
 document.getElementById('logoutBtn').addEventListener('click', () => {
   clearSession();
