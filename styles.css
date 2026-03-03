@@ -185,15 +185,14 @@ body {
   letter-spacing: .02em;
 }
 
-/* ── 3×2 Shape Grid ─────────────────────────────── */
+/* ── 4-shape single-row alignment ───────────────── */
 .shapes-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 120px);
-  grid-template-rows:    repeat(2, auto);
-  column-gap: 24px;
-  row-gap: 36px;
-  justify-items: center;
-  align-items: end;
+  display: flex;
+  flex-direction: row;
+  gap: 22px;
+  justify-content: center;
+  align-items: flex-end;
+  flex-wrap: nowrap;
 }
 
 /* ── Single Geo Character ───────────────────────── */
@@ -210,8 +209,6 @@ body {
 #geo-semi    { animation-delay: -0.55s; }
 #geo-rect    { animation-delay: -1.1s;  }
 #geo-diamond { animation-delay: -0.28s; }
-#geo-square  { animation-delay: -0.83s; }
-#geo-pent    { animation-delay: -1.6s;  }
 
 @keyframes geoFloat {
   0%,  100% { transform: translateY(0px);   }
@@ -250,17 +247,6 @@ body {
   clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
 }
 
-#geo-square .shape-wrap  { width: 90px;  height: 90px;  }
-.square-bg {
-  background: linear-gradient(135deg, #FFD93D, #FF9F43);
-  border-radius: 13px;
-}
-
-#geo-pent .shape-wrap    { width: 94px;  height: 90px;  }
-.pent-bg {
-  background: linear-gradient(135deg, #FF6B6B, #C0392B);
-  clip-path: polygon(50% 0%, 100% 38%, 81% 100%, 19% 100%, 0% 38%);
-}
 
 /* ── Face overlay ───────────────────────────────── */
 .shape-face {
@@ -276,8 +262,6 @@ body {
 .semi-face    { justify-content: flex-start; padding-top:    11px; }
 .rect-face    { justify-content: flex-start; padding-top:    19px; }
 .diamond-face { justify-content: center; }
-.square-face  { justify-content: center; }
-.pent-face    { justify-content: flex-start; padding-top:    24px; }
 
 /* ── Eyes ───────────────────────────────────────── */
 .geo-eyes { display: flex; gap: 9px; margin-bottom: 5px; }
@@ -599,7 +583,7 @@ body {
 @media (max-width: 860px) {
   .login-page      { flex-direction: column; }
   .shapes-panel    { flex: 0 0 auto; padding: 44px 24px 36px; }
-  .shapes-grid     { column-gap: 16px; row-gap: 24px; grid-template-columns: repeat(3, 100px); }
+  .shapes-grid     { gap: 14px; }
   .login-panel     { padding: 36px 24px; }
   .login-card      { padding: 32px 24px; }
   .dash-sidebar    { display: none; }
@@ -609,11 +593,9 @@ body {
   .user-name-label { display: none; }
 }
 @media (max-width: 480px) {
-  .shapes-grid { grid-template-columns: repeat(3, 84px); column-gap: 10px; }
-  #geo-tri .shape-wrap     { width: 82px;  height: 74px; }
-  #geo-semi .shape-wrap    { width: 90px;  height: 45px; }
-  #geo-rect .shape-wrap    { width: 56px;  height: 86px; }
-  #geo-diamond .shape-wrap { width: 74px;  height: 74px; }
-  #geo-square .shape-wrap  { width: 74px;  height: 74px; }
-  #geo-pent .shape-wrap    { width: 76px;  height: 72px; }
+  .shapes-grid { gap: 10px; }
+  #geo-tri .shape-wrap     { width: 72px;  height: 65px; }
+  #geo-semi .shape-wrap    { width: 80px;  height: 40px; }
+  #geo-rect .shape-wrap    { width: 50px;  height: 78px; }
+  #geo-diamond .shape-wrap { width: 68px;  height: 68px; }
 }
