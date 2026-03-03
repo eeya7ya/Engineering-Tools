@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>eSpark Engineering Online Tools</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- Floating interactive characters canvas -->
+  <canvas id="bgCanvas"></canvas>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="logo">
+      <span class="logo-e">e</span><span class="logo-spark">Spark</span>
+      <span class="logo-sub">Engineering Tools</span>
+    </div>
+    <ul class="nav-links">
+      <li><a href="#tools">Tools</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <button class="btn-launch">Launch App</button>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <!-- Cute interactive characters (DOM-based) -->
+    <div class="characters-stage" id="charactersStage">
+      <!-- Bolt Bob -->
+      <div class="character" id="char-bolt" data-speed="0.06" data-offset-x="-320" data-offset-y="40">
+        <div class="char-body bolt-body">
+          <div class="char-eyes">
+            <div class="eye"><div class="pupil"></div></div>
+            <div class="eye"><div class="pupil"></div></div>
+          </div>
+          <div class="char-mouth smile"></div>
+          <div class="bolt-symbol">⚡</div>
+        </div>
+        <div class="char-label">Bolt Bob</div>
+      </div>
+
+      <!-- Ohm Omi -->
+      <div class="character" id="char-ohm" data-speed="0.04" data-offset-x="-160" data-offset-y="-60">
+        <div class="char-body ohm-body">
+          <div class="char-eyes">
+            <div class="eye"><div class="pupil"></div></div>
+            <div class="eye"><div class="pupil"></div></div>
+          </div>
+          <div class="char-mouth grin"></div>
+          <div class="ohm-symbol">Ω</div>
+        </div>
+        <div class="char-label">Ohm Omi</div>
+      </div>
+
+      <!-- Watt Wanda -->
+      <div class="character" id="char-watt" data-speed="0.05" data-offset-x="80" data-offset-y="80">
+        <div class="char-body watt-body">
+          <div class="char-eyes">
+            <div class="eye"><div class="pupil"></div></div>
+            <div class="eye"><div class="pupil"></div></div>
+          </div>
+          <div class="char-mouth smile"></div>
+          <div class="watt-symbol">W</div>
+        </div>
+        <div class="char-label">Watt Wanda</div>
+      </div>
+
+      <!-- Amp Andy -->
+      <div class="character" id="char-amp" data-speed="0.07" data-offset-x="240" data-offset-y="-30">
+        <div class="char-body amp-body">
+          <div class="char-eyes">
+            <div class="eye"><div class="pupil"></div></div>
+            <div class="eye"><div class="pupil"></div></div>
+          </div>
+          <div class="char-mouth grin"></div>
+          <div class="amp-symbol">A</div>
+        </div>
+        <div class="char-label">Amp Andy</div>
+      </div>
+    </div>
+
+    <!-- Hero text -->
+    <div class="hero-content">
+      <div class="hero-badge">⚡ Electrical Engineering Suite</div>
+      <h1 class="hero-title">
+        <span class="title-e">e</span>Spark<br />
+        <span class="title-accent">Engineering</span><br />
+        Online Tools
+      </h1>
+      <p class="hero-desc">
+        A playful, powerful toolkit for electrical engineers.<br />
+        Calculate, simulate, and design — all in one place.
+      </p>
+      <div class="hero-cta">
+        <button class="btn-primary">Explore Tools</button>
+        <button class="btn-secondary">Learn More</button>
+      </div>
+      <div class="hero-stats">
+        <div class="stat"><span class="stat-num">20+</span><span class="stat-label">Tools</span></div>
+        <div class="stat-div"></div>
+        <div class="stat"><span class="stat-num">Free</span><span class="stat-label">Always</span></div>
+        <div class="stat-div"></div>
+        <div class="stat"><span class="stat-num">Fast</span><span class="stat-label">Instant</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tools Preview Section -->
+  <section class="tools-section" id="tools">
+    <div class="section-header">
+      <h2>Popular Tools</h2>
+      <p>Pick a tool and start calculating</p>
+    </div>
+    <div class="tools-grid">
+      <div class="tool-card" data-color="#FFD93D">
+        <div class="tool-icon">⚡</div>
+        <h3>Ohm's Law Calculator</h3>
+        <p>Solve V, I, R relationships instantly</p>
+        <span class="tool-tag">Basic</span>
+      </div>
+      <div class="tool-card" data-color="#6BCB77">
+        <div class="tool-icon">🔋</div>
+        <h3>Power Calculator</h3>
+        <p>Compute power in AC/DC circuits</p>
+        <span class="tool-tag">Power</span>
+      </div>
+      <div class="tool-card" data-color="#4D96FF">
+        <div class="tool-icon">〰️</div>
+        <h3>Impedance Calculator</h3>
+        <p>RLC series &amp; parallel impedance</p>
+        <span class="tool-tag">AC</span>
+      </div>
+      <div class="tool-card" data-color="#FF6B6B">
+        <div class="tool-icon">📡</div>
+        <h3>Transformer Calculator</h3>
+        <p>Turns ratio, voltage &amp; current</p>
+        <span class="tool-tag">Magnetics</span>
+      </div>
+      <div class="tool-card" data-color="#C77DFF">
+        <div class="tool-icon">🌊</div>
+        <h3>Filter Designer</h3>
+        <p>Low-pass, high-pass, band-pass</p>
+        <span class="tool-tag">Signal</span>
+      </div>
+      <div class="tool-card" data-color="#FF9F43">
+        <div class="tool-icon">🔢</div>
+        <h3>Unit Converter</h3>
+        <p>Convert electrical units instantly</p>
+        <span class="tool-tag">Utility</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Spark trail cursor element -->
+  <div class="cursor-spark" id="cursorSpark"></div>
+  <div class="cursor-dot" id="cursorDot"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
