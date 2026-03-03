@@ -28,27 +28,10 @@
         <p class="shapes-tagline">Your engineering toolkit awaits</p>
       </div>
 
-      <!-- 3 × 2 Grid of Real Geometric Shapes -->
-      <div class="shapes-grid">
+      <!-- 4 shapes: same y=0 baseline, sizes & x-positions vary -->
+      <div class="shapes-stage">
 
-        <!-- ROW 1 ──────────────────────────────── -->
-
-        <!-- Triangle -->
-        <div class="geo-char" id="geo-tri">
-          <div class="shape-wrap">
-            <div class="shape-bg tri-bg"></div>
-            <div class="shape-face tri-face">
-              <div class="geo-eyes">
-                <div class="geo-eye"><div class="geo-pupil"></div></div>
-                <div class="geo-eye"><div class="geo-pupil"></div></div>
-              </div>
-              <div class="geo-mouth"></div>
-            </div>
-          </div>
-          <span class="geo-label">Triangle</span>
-        </div>
-
-        <!-- Semi-circle -->
+        <!-- Semi-circle (smallest, leftmost) -->
         <div class="geo-char" id="geo-semi">
           <div class="shape-wrap">
             <div class="shape-bg semi-bg"></div>
@@ -60,57 +43,9 @@
               <div class="geo-mouth"></div>
             </div>
           </div>
-          <span class="geo-label">Semi-circle</span>
         </div>
 
-        <!-- Rectangle -->
-        <div class="geo-char" id="geo-rect">
-          <div class="shape-wrap">
-            <div class="shape-bg rect-bg"></div>
-            <div class="shape-face rect-face">
-              <div class="geo-eyes">
-                <div class="geo-eye"><div class="geo-pupil"></div></div>
-                <div class="geo-eye"><div class="geo-pupil"></div></div>
-              </div>
-              <div class="geo-mouth grin-mouth"></div>
-            </div>
-          </div>
-          <span class="geo-label">Rectangle</span>
-        </div>
-
-        <!-- ROW 2 ──────────────────────────────── -->
-
-        <!-- Diamond -->
-        <div class="geo-char" id="geo-diamond">
-          <div class="shape-wrap">
-            <div class="shape-bg diamond-bg"></div>
-            <div class="shape-face diamond-face">
-              <div class="geo-eyes">
-                <div class="geo-eye"><div class="geo-pupil"></div></div>
-                <div class="geo-eye"><div class="geo-pupil"></div></div>
-              </div>
-              <div class="geo-mouth"></div>
-            </div>
-          </div>
-          <span class="geo-label">Diamond</span>
-        </div>
-
-        <!-- Square -->
-        <div class="geo-char" id="geo-square">
-          <div class="shape-wrap">
-            <div class="shape-bg square-bg"></div>
-            <div class="shape-face square-face">
-              <div class="geo-eyes">
-                <div class="geo-eye"><div class="geo-pupil"></div></div>
-                <div class="geo-eye"><div class="geo-pupil"></div></div>
-              </div>
-              <div class="geo-mouth grin-mouth"></div>
-            </div>
-          </div>
-          <span class="geo-label">Square</span>
-        </div>
-
-        <!-- Pentagon -->
+        <!-- Pentagon (medium-small) -->
         <div class="geo-char" id="geo-pent">
           <div class="shape-wrap">
             <div class="shape-bg pent-bg"></div>
@@ -122,10 +57,37 @@
               <div class="geo-mouth"></div>
             </div>
           </div>
-          <span class="geo-label">Pentagon</span>
         </div>
 
-      </div><!-- /.shapes-grid -->
+        <!-- Triangle (medium-tall) -->
+        <div class="geo-char" id="geo-tri">
+          <div class="shape-wrap">
+            <div class="shape-bg tri-bg"></div>
+            <div class="shape-face tri-face">
+              <div class="geo-eyes">
+                <div class="geo-eye"><div class="geo-pupil"></div></div>
+                <div class="geo-eye"><div class="geo-pupil"></div></div>
+              </div>
+              <div class="geo-mouth"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Rectangle (tallest, rightmost — closest to login) -->
+        <div class="geo-char" id="geo-rect">
+          <div class="shape-wrap">
+            <div class="shape-bg rect-bg"></div>
+            <div class="shape-face rect-face">
+              <div class="geo-eyes">
+                <div class="geo-eye"><div class="geo-pupil"></div></div>
+                <div class="geo-eye"><div class="geo-pupil"></div></div>
+              </div>
+              <div class="geo-mouth grin-mouth"></div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /.shapes-stage -->
 
     </div><!-- /.shapes-panel -->
 

@@ -139,9 +139,13 @@ renderCanvas();
 
 const geoChars  = [...document.querySelectorAll('.geo-char')];
 const loginCard = document.getElementById('loginCard');
+const loginBtn  = document.querySelector('.btn-login');
 
 // Per-shape cooldown so "surprised" doesn't flicker
 const surprisedCooldown = new Map();
+
+// Track login-hover state to trigger burst once per entry
+let wasLoginHover = false;
 
 /**
  * Returns the bounding rect center of an element.
@@ -151,15 +155,59 @@ function center(el) {
   return { x: r.left + r.width / 2, y: r.top + r.height / 2, rect: r };
 }
 
+/**
+ * Burst a ring of sparks from a shape's center when it enters login-hover.
+ */
+function burstLoginSparks(shapeEl) {
+  const r      = shapeEl.getBoundingClientRect();
+  const cx     = r.left + r.width  / 2;
+  const cy     = r.top  + r.height / 2;
+  const count  = 8;
+  for (let i = 0; i < count; i++) {
+    const angle  = (i / count) * Math.PI * 2;
+    const dist   = 28 + Math.random() * 20;
+    const color  = sparkColors[Math.floor(Math.random() * sparkColors.length)];
+    const size   = 5 + Math.random() * 4;
+    const p      = document.createElement('div');
+    p.className  = 'spark-particle';
+    p.style.cssText = [
+      `left:${cx}px`,
+      `top:${cy}px`,
+      `background:${color}`,
+      `width:${size}px`,
+      `height:${size}px`,
+      `transform:translate(-50%,-50%) translate(${Math.cos(angle) * dist}px,${Math.sin(angle) * dist}px)`
+    ].join(';');
+    document.body.appendChild(p);
+    setTimeout(() => p.remove(), 680);
+  }
+}
+
 function animateGeoChars() {
   const card     = center(loginCard);
   const cardRect = card.rect;
 
-  // "Near card" zone: 200px left buffer so shapes on the left react
-  // as the cursor moves toward the right-panel login form.
+  // Distance from mouse to the Sign In button center
+  let nearLoginBtn = false;
+  if (loginBtn) {
+    const br  = loginBtn.getBoundingClientRect();
+    const bcx = br.left + br.width  / 2;
+    const bcy = br.top  + br.height / 2;
+    const d   = Math.sqrt((mouse.x - bcx) ** 2 + (mouse.y - bcy) ** 2);
+    nearLoginBtn = d < 190;
+  }
+
+  // General "near card" zone — a wide buffer so shapes start reacting
+  // as the cursor approaches the right-panel login form.
   const nearCard =
     mouse.x > cardRect.left  - 220 && mouse.x < cardRect.right  + 60 &&
     mouse.y > cardRect.top   - 80  && mouse.y < cardRect.bottom + 80;
+
+  // Fire a burst once when the cursor enters the login-hover zone
+  if (nearLoginBtn && !wasLoginHover) {
+    geoChars.forEach(s => burstLoginSparks(s));
+  }
+  wasLoginHover = nearLoginBtn;
 
   geoChars.forEach(shape => {
     const si = center(shape);
@@ -167,7 +215,7 @@ function animateGeoChars() {
     const dy = mouse.y - si.y;
     const distToMouse = Math.sqrt(dx * dx + dy * dy);
 
-    // ── Pupils follow the right target ──────────
+    // ── Pupils follow the right target ──────────────
     const lookX = nearCard ? card.x : mouse.x;
     const lookY = nearCard ? card.y : mouse.y;
 
@@ -177,20 +225,18 @@ function animateGeoChars() {
       const ex    = er.left + er.width  / 2;
       const ey    = er.top  + er.height / 2;
       const angle = Math.atan2(lookY - ey, lookX - ex);
-      const dist  = 3;
       pupil.style.transform =
-        `translate(${Math.cos(angle) * dist}px, ${Math.sin(angle) * dist}px)`;
+        `translate(${Math.cos(angle) * 3}px, ${Math.sin(angle) * 3}px)`;
     });
 
-    // ── Expression state machine ─────────────────
-    // Priority: surprised > excited > default
+    // ── Expression state machine ─────────────────────
+    // Priority: surprised > login-hover > excited > default
     if (distToMouse < 88 && !nearCard) {
-      // Mouse is right on top of this shape → SURPRISED
+      // Mouse right on this shape → SURPRISED
       if (!shape.classList.contains('surprised')) {
         shape.classList.add('surprised');
-        shape.classList.remove('excited');
+        shape.classList.remove('excited', 'login-hover');
 
-        // After the surprised animation plays out, clear the class
         const prev = surprisedCooldown.get(shape);
         if (prev) clearTimeout(prev);
         surprisedCooldown.set(shape, setTimeout(() => {
@@ -198,16 +244,23 @@ function animateGeoChars() {
         }, 480));
       }
 
+    } else if (nearLoginBtn) {
+      // Near Sign In button → strongest excitement state
+      if (!shape.classList.contains('surprised')) {
+        shape.classList.add('login-hover');
+        shape.classList.remove('excited');
+      }
+
     } else if (nearCard) {
-      // Cursor heading toward login card → all shapes get EXCITED
+      // Near card generally → EXCITED
       if (!shape.classList.contains('surprised')) {
         shape.classList.add('excited');
+        shape.classList.remove('login-hover');
       }
 
     } else {
-      // Back to default floating
-      shape.classList.remove('excited');
-      // Don't remove 'surprised' here — let the timeout handle it
+      // Default — floating
+      shape.classList.remove('excited', 'login-hover');
     }
   });
 
