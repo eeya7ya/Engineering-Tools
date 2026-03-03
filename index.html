@@ -8,97 +8,229 @@
 </head>
 <body>
 
-  <!-- Animated background canvas (visible in all views) -->
+  <!-- Animated background canvas -->
   <canvas id="bgCanvas"></canvas>
 
   <!-- ═══════════════════════════════════════════════════════════
-       VIEW 1 — LOGIN
+       VIEW 1 — LOGIN  (shapes panel + login form)
        ═══════════════════════════════════════════════════════════ -->
   <div id="loginView" class="view active">
-    <div class="auth-card" id="loginCard">
+    <div class="login-page">
 
-      <div class="auth-logo">
-        <span class="logo-e">e</span><span class="logo-spark">Spark</span>
-        <span class="logo-sub">Engineering Tools</span>
-      </div>
+      <!-- ── LEFT PANEL: Geometric Shape Characters ── -->
+      <div class="shapes-panel" id="shapesPanel">
 
-      <h2 class="auth-title">Welcome back!</h2>
-      <p class="auth-subtitle">Sign in to your engineering toolkit</p>
-
-      <!-- Google Sign-In (rendered by GIS SDK) -->
-      <div id="googleLoginBtn" class="google-btn-wrap"></div>
-
-      <div class="auth-divider"><span>or sign in with email</span></div>
-
-      <form id="loginForm" class="auth-form" novalidate>
-        <div class="form-group">
-          <label class="form-label" for="loginEmail">Email</label>
-          <input type="email" id="loginEmail" class="form-input"
-                 placeholder="you@example.com" autocomplete="email" />
-        </div>
-        <div class="form-group">
-          <div class="form-label-row">
-            <label class="form-label" for="loginPassword">Password</label>
-            <button type="button" class="link-btn" id="forgotBtn">Forgot password?</button>
+        <div class="shapes-brand">
+          <div class="logo">
+            <span class="logo-e">e</span><span class="logo-spark">Spark</span>
           </div>
-          <input type="password" id="loginPassword" class="form-input"
-                 placeholder="••••••••" autocomplete="current-password" />
+          <p class="shapes-tagline">Your engineering toolkit awaits</p>
         </div>
-        <div id="loginError" class="auth-error"></div>
-        <button type="submit" class="btn-primary btn-full">Sign In ⚡</button>
-      </form>
 
-      <p class="auth-switch">
-        Don't have an account?
-        <button type="button" class="link-btn link-accent" id="toRegisterBtn">Create one free</button>
-      </p>
+        <div class="shapes-grid">
 
-    </div>
+          <!-- Triangle -->
+          <div class="geo-char" id="geo-tri">
+            <div class="shape-wrap">
+              <div class="shape-bg tri-bg"></div>
+              <div class="shape-face tri-face">
+                <div class="geo-eyes">
+                  <div class="geo-eye"><div class="geo-pupil"></div></div>
+                  <div class="geo-eye"><div class="geo-pupil"></div></div>
+                </div>
+                <div class="geo-mouth"></div>
+              </div>
+            </div>
+            <span class="geo-label">Triangle</span>
+          </div>
+
+          <!-- Semi-circle -->
+          <div class="geo-char" id="geo-semi">
+            <div class="shape-wrap">
+              <div class="shape-bg semi-bg"></div>
+              <div class="shape-face semi-face">
+                <div class="geo-eyes">
+                  <div class="geo-eye"><div class="geo-pupil"></div></div>
+                  <div class="geo-eye"><div class="geo-pupil"></div></div>
+                </div>
+                <div class="geo-mouth"></div>
+              </div>
+            </div>
+            <span class="geo-label">Semi-circle</span>
+          </div>
+
+          <!-- Rectangle -->
+          <div class="geo-char" id="geo-rect">
+            <div class="shape-wrap">
+              <div class="shape-bg rect-bg"></div>
+              <div class="shape-face rect-face">
+                <div class="geo-eyes">
+                  <div class="geo-eye"><div class="geo-pupil"></div></div>
+                  <div class="geo-eye"><div class="geo-pupil"></div></div>
+                </div>
+                <div class="geo-mouth grin-mouth"></div>
+              </div>
+            </div>
+            <span class="geo-label">Rectangle</span>
+          </div>
+
+          <!-- Diamond -->
+          <div class="geo-char" id="geo-diamond">
+            <div class="shape-wrap">
+              <div class="shape-bg diamond-bg"></div>
+              <div class="shape-face diamond-face">
+                <div class="geo-eyes">
+                  <div class="geo-eye"><div class="geo-pupil"></div></div>
+                  <div class="geo-eye"><div class="geo-pupil"></div></div>
+                </div>
+                <div class="geo-mouth"></div>
+              </div>
+            </div>
+            <span class="geo-label">Diamond</span>
+          </div>
+
+          <!-- Square -->
+          <div class="geo-char" id="geo-square">
+            <div class="shape-wrap">
+              <div class="shape-bg square-bg"></div>
+              <div class="shape-face square-face">
+                <div class="geo-eyes">
+                  <div class="geo-eye"><div class="geo-pupil"></div></div>
+                  <div class="geo-eye"><div class="geo-pupil"></div></div>
+                </div>
+                <div class="geo-mouth grin-mouth"></div>
+              </div>
+            </div>
+            <span class="geo-label">Square</span>
+          </div>
+
+          <!-- Pentagon -->
+          <div class="geo-char" id="geo-pent">
+            <div class="shape-wrap">
+              <div class="shape-bg pent-bg"></div>
+              <div class="shape-face pent-face">
+                <div class="geo-eyes">
+                  <div class="geo-eye"><div class="geo-pupil"></div></div>
+                  <div class="geo-eye"><div class="geo-pupil"></div></div>
+                </div>
+                <div class="geo-mouth"></div>
+              </div>
+            </div>
+            <span class="geo-label">Pentagon</span>
+          </div>
+
+        </div><!-- /.shapes-grid -->
+      </div><!-- /.shapes-panel -->
+
+      <!-- ── RIGHT PANEL: Login Form ── -->
+      <div class="login-panel">
+        <div class="login-card" id="loginCard">
+
+          <div class="login-header">
+            <div class="logo" style="justify-content:center;margin-bottom:18px;">
+              <span class="logo-e">e</span><span class="logo-spark">Spark</span>
+              <span class="logo-sub">Engineering Tools</span>
+            </div>
+            <h2 class="login-title">Welcome back!</h2>
+            <p class="login-subtitle">Sign in to your engineering toolkit</p>
+          </div>
+
+          <!-- Google Sign-In -->
+          <div id="googleLoginBtn" class="google-btn-wrap"></div>
+
+          <div class="login-divider"><span>or</span></div>
+
+          <form class="login-form" id="loginForm" novalidate>
+            <div class="form-group">
+              <label class="form-label" for="loginEmail">Email</label>
+              <input type="email" id="loginEmail" class="form-input"
+                     placeholder="you@example.com" autocomplete="email" />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="loginPassword">Password
+                <button type="button" class="forgot-link" id="forgotBtn">Forgot password?</button>
+              </label>
+              <input type="password" id="loginPassword" class="form-input"
+                     placeholder="••••••••" autocomplete="current-password" />
+            </div>
+            <div id="loginError" class="auth-error"></div>
+            <button type="submit" class="btn-primary btn-login">Sign In ⚡</button>
+          </form>
+
+          <div class="login-footer">
+            <p>Don't have an account?
+              <button type="button" class="register-link" id="toRegisterBtn">Create one free</button>
+            </p>
+          </div>
+
+        </div><!-- /.login-card -->
+      </div><!-- /.login-panel -->
+
+    </div><!-- /.login-page -->
   </div>
 
   <!-- ═══════════════════════════════════════════════════════════
-       VIEW 2 — REGISTER
+       VIEW 2 — REGISTER  (centered card, same dark bg)
        ═══════════════════════════════════════════════════════════ -->
   <div id="registerView" class="view">
-    <div class="auth-card">
+    <div class="login-page register-page">
 
-      <div class="auth-logo">
-        <span class="logo-e">e</span><span class="logo-spark">Spark</span>
-        <span class="logo-sub">Engineering Tools</span>
+      <!-- LEFT: brand only (no shapes grid) -->
+      <div class="shapes-panel shapes-panel--slim">
+        <div class="shapes-brand">
+          <div class="logo">
+            <span class="logo-e">e</span><span class="logo-spark">Spark</span>
+          </div>
+          <p class="shapes-tagline">Create your free account</p>
+        </div>
       </div>
 
-      <h2 class="auth-title">Create your account</h2>
-      <p class="auth-subtitle">Join thousands of engineers</p>
+      <!-- RIGHT: Register form -->
+      <div class="login-panel">
+        <div class="login-card">
 
-      <!-- Google Sign-Up (same SDK, same callback) -->
-      <div id="googleRegisterBtn" class="google-btn-wrap"></div>
+          <div class="login-header">
+            <div class="logo" style="justify-content:center;margin-bottom:18px;">
+              <span class="logo-e">e</span><span class="logo-spark">Spark</span>
+              <span class="logo-sub">Engineering Tools</span>
+            </div>
+            <h2 class="login-title">Create account</h2>
+            <p class="login-subtitle">Join thousands of engineers</p>
+          </div>
 
-      <div class="auth-divider"><span>or sign up with email</span></div>
+          <!-- Google Sign-Up -->
+          <div id="googleRegisterBtn" class="google-btn-wrap"></div>
 
-      <form id="registerForm" class="auth-form" novalidate>
-        <div class="form-group">
-          <label class="form-label" for="regName">Full Name</label>
-          <input type="text" id="regName" class="form-input"
-                 placeholder="Jane Doe" autocomplete="name" />
+          <div class="login-divider"><span>or</span></div>
+
+          <form class="login-form" id="registerForm" novalidate>
+            <div class="form-group">
+              <label class="form-label" for="regName">Full Name</label>
+              <input type="text" id="regName" class="form-input"
+                     placeholder="Jane Doe" autocomplete="name" />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="regEmail">Email</label>
+              <input type="email" id="regEmail" class="form-input"
+                     placeholder="you@example.com" autocomplete="email" />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="regPassword">Password</label>
+              <input type="password" id="regPassword" class="form-input"
+                     placeholder="At least 8 characters" autocomplete="new-password" />
+            </div>
+            <div id="registerError" class="auth-error"></div>
+            <button type="submit" class="btn-primary btn-login">Create Account ⚡</button>
+          </form>
+
+          <div class="login-footer">
+            <p>Already have an account?
+              <button type="button" class="register-link" id="toLoginBtn">Sign in</button>
+            </p>
+          </div>
+
         </div>
-        <div class="form-group">
-          <label class="form-label" for="regEmail">Email</label>
-          <input type="email" id="regEmail" class="form-input"
-                 placeholder="you@example.com" autocomplete="email" />
-        </div>
-        <div class="form-group">
-          <label class="form-label" for="regPassword">Password</label>
-          <input type="password" id="regPassword" class="form-input"
-                 placeholder="At least 8 characters" autocomplete="new-password" />
-        </div>
-        <div id="registerError" class="auth-error"></div>
-        <button type="submit" class="btn-primary btn-full">Create Account ⚡</button>
-      </form>
-
-      <p class="auth-switch">
-        Already have an account?
-        <button type="button" class="link-btn link-accent" id="toLoginBtn">Sign in</button>
-      </p>
+      </div>
 
     </div>
   </div>
@@ -108,18 +240,15 @@
        ═══════════════════════════════════════════════════════════ -->
   <div id="dashView" class="view dash-view">
 
-    <!-- Top Bar -->
     <header class="dash-topbar">
       <div class="dash-logo">
         <span class="logo-e">e</span><span class="logo-spark">Spark</span>
         <span class="logo-sub">Engineering Tools</span>
       </div>
-
       <div class="dash-search">
         <span class="search-icon">⚡</span>
         <input type="text" id="toolSearch" class="search-input" placeholder="Search tools…" />
       </div>
-
       <div class="dash-user-area">
         <div class="dash-user-info">
           <img id="userAvatar" class="user-avatar" src="" alt="" />
@@ -129,10 +258,8 @@
       </div>
     </header>
 
-    <!-- Body: sidebar + main -->
     <div class="dash-body">
 
-      <!-- Sidebar -->
       <aside class="dash-sidebar">
         <nav class="sidebar-nav" id="sidebarNav">
           <button class="nav-item active" data-cat="all">
@@ -159,7 +286,6 @@
         </nav>
       </aside>
 
-      <!-- Main content -->
       <main class="dash-main">
         <div class="dash-welcome">
           <h1 id="welcomeMsg">Good morning! 👋</h1>
@@ -175,7 +301,6 @@
   <div class="cursor-spark" id="cursorSpark"></div>
   <div class="cursor-dot"   id="cursorDot"></div>
 
-  <!-- Google Identity Services SDK -->
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <script src="app.js"></script>
 
