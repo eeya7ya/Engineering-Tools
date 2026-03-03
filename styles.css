@@ -176,11 +176,12 @@ body {
 }
 
 .shapes-brand { text-align: center; margin-bottom: 44px; }
-.shapes-brand .logo { margin-bottom: 10px; justify-content: center; }
-.shapes-brand .logo-spark { color: var(--white); }
+.shapes-brand .logo { margin-bottom: 14px; justify-content: center; }
+.shapes-brand .logo-e     { font-size: 3rem; }
+.shapes-brand .logo-spark { font-size: 3rem; color: var(--white); }
 .shapes-tagline {
-  font-size: .88rem;
-  color: rgba(255,255,255,.38);
+  font-size: 1.1rem;
+  color: rgba(255,255,255,.72);
   font-weight: 500;
   letter-spacing: .02em;
 }
@@ -395,6 +396,24 @@ body {
 .forgot-link:hover { color: var(--accent1); }
 
 .btn-login { width: 100%; padding: 14px; margin-top: 4px; font-size: .97rem; cursor: none; }
+
+/* ── Sign-In Shock Animation ────────────────────────── */
+@keyframes btnShock {
+  0%   { transform: scale(1.08) rotate(-1deg); background: var(--accent2); color: var(--dark); }
+  10%  { transform: translateX(-8px) rotate(-3deg); }
+  20%  { transform: translateX(8px)  rotate(3deg);  }
+  30%  { transform: translateX(-7px) rotate(-2deg); background: var(--accent1); color: var(--white); }
+  40%  { transform: translateX(7px)  rotate(2deg);  }
+  50%  { transform: translateX(-5px) rotate(-1deg); }
+  60%  { transform: translateX(5px)  rotate(1deg);  }
+  70%  { transform: translateX(-3px); }
+  85%  { transform: translateX(3px); }
+  100% { transform: translateX(0) scale(1) rotate(0deg); }
+}
+.btn-login.btn-shock {
+  animation: btnShock .58s cubic-bezier(.36,.07,.19,.97) forwards !important;
+  pointer-events: none;
+}
 
 /* ── Auth error ─────────────────────────────────── */
 .auth-error {
