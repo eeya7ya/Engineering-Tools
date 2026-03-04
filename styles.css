@@ -397,22 +397,35 @@ body {
 
 .btn-login { width: 100%; padding: 14px; margin-top: 4px; font-size: .97rem; cursor: none; }
 
-/* ── Sign-In Shock Animation ────────────────────────── */
-@keyframes btnShock {
-  0%   { transform: scale(1.08) rotate(-1deg); background: var(--accent2); color: var(--dark); }
-  10%  { transform: translateX(-8px) rotate(-3deg); }
-  20%  { transform: translateX(8px)  rotate(3deg);  }
-  30%  { transform: translateX(-7px) rotate(-2deg); background: var(--accent1); color: var(--white); }
-  40%  { transform: translateX(7px)  rotate(2deg);  }
-  50%  { transform: translateX(-5px) rotate(-1deg); }
-  60%  { transform: translateX(5px)  rotate(1deg);  }
-  70%  { transform: translateX(-3px); }
-  85%  { transform: translateX(3px); }
-  100% { transform: translateX(0) scale(1) rotate(0deg); }
+/* ── Sign-In button press feedback (subtle) ────────── */
+.btn-login:active {
+  transform: scale(0.97);
 }
-.btn-login.btn-shock {
-  animation: btnShock .58s cubic-bezier(.36,.07,.19,.97) forwards !important;
-  pointer-events: none;
+
+/* ── Demo credentials hint ─────────────────────── */
+.demo-hint {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  margin-top: 14px;
+  padding: 10px 14px;
+  background: rgba(77,150,255,.07);
+  border: 1px dashed rgba(77,150,255,.25);
+  border-radius: 10px;
+}
+.demo-hint-label {
+  font-size: .72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--accent3);
+}
+.demo-hint-creds {
+  font-size: .85rem;
+  font-weight: 600;
+  color: var(--text);
+  font-family: 'Courier New', monospace;
 }
 
 /* ── Auth error ─────────────────────────────────── */

@@ -253,6 +253,28 @@ async function api(path, opts = {}) {
 }
 
 // ════════════════════════════════════════════════════
+//  DEMO / OFFLINE AUTH
+// ════════════════════════════════════════════════════
+// When the backend is unreachable, these demo accounts work locally.
+const DEMO_ACCOUNTS = [
+  { id: 1, email: 'demo@espark.dev',  password: 'demo1234', name: 'Demo Engineer', avatar: '' },
+  { id: 2, email: 'admin@espark.dev', password: 'admin1234', name: 'Admin User',   avatar: '' },
+];
+
+function demoLogin(email, password) {
+  const user = DEMO_ACCOUNTS.find(a => a.email === email && a.password === password);
+  if (!user) return null;
+  return { token: 'demo-token', user: { id: user.id, email: user.email, name: user.name, avatar: user.avatar } };
+}
+
+function demoRegister(name, email, password) {
+  if (DEMO_ACCOUNTS.find(a => a.email === email)) return { error: 'An account with this email already exists' };
+  const user = { id: Date.now(), email, name, avatar: '' };
+  DEMO_ACCOUNTS.push({ ...user, password });
+  return { token: 'demo-token', user };
+}
+
+// ════════════════════════════════════════════════════
 //  GOOGLE IDENTITY SERVICES
 // ════════════════════════════════════════════════════
 function initGoogle(googleClientId) {
@@ -280,10 +302,16 @@ function initGoogle(googleClientId) {
 
 async function handleGoogleCredential(response) {
   setError('loginError', '');
-  const data = await api('/api/auth/google', {
-    method: 'POST',
-    body: JSON.stringify({ credential: response.credential }),
-  });
+  let data;
+  try {
+    data = await api('/api/auth/google', {
+      method: 'POST',
+      body: JSON.stringify({ credential: response.credential }),
+    });
+  } catch {
+    setError('loginError', 'Could not reach the server. Please try email & password login.');
+    return;
+  }
   if (data.error) { setError('loginError', data.error); return; }
   saveSession(data.token, data.user);
   loadDashboard(data.user);
@@ -297,31 +325,14 @@ function setError(elId, msg) {
   if (el) el.textContent = msg;
 }
 
-// Shock animation: Sign In button click triggers cute electric shake + shapes react
-document.querySelector('.btn-login').addEventListener('click', () => {
-  const btn = document.querySelector('.btn-login');
-  btn.classList.remove('btn-shock');
-  void btn.offsetWidth; // reflow to restart animation
-  btn.classList.add('btn-shock');
-  btn.addEventListener('animationend', () => btn.classList.remove('btn-shock'), { once: true });
-
-  // All shapes react with "surprised" expression simultaneously
-  geoChars.forEach(shape => {
-    shape.classList.remove('surprised', 'excited');
-    void shape.offsetWidth;
-    shape.classList.add('surprised');
-    const prev = surprisedCooldown.get(shape);
-    if (prev) clearTimeout(prev);
-    surprisedCooldown.set(shape, setTimeout(() => shape.classList.remove('surprised'), 480));
-  });
-});
+// Sign In button click — no shock animation, just subtle feedback
 
 // Google fallback button: show feedback when backend/OAuth is not configured
 document.getElementById('googleLoginFallback')?.addEventListener('click', () => {
-  setError('loginError', 'Google Sign In requires backend configuration — use email & password for now.');
+  setError('loginError', 'Google Sign In is not configured. Use demo@espark.dev / demo1234 to sign in.');
 });
 document.getElementById('googleRegisterFallback')?.addEventListener('click', () => {
-  setError('registerError', 'Google Sign Up requires backend configuration — use email & password for now.');
+  setError('registerError', 'Google Sign Up is not configured. Use email & password to register.');
 });
 
 document.getElementById('loginForm').addEventListener('submit', async e => {
@@ -330,10 +341,18 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
   const email    = document.getElementById('loginEmail').value.trim();
   const password = document.getElementById('loginPassword').value;
   if (!email || !password) { setError('loginError', 'Please fill in all fields'); return; }
-  const data = await api('/api/auth/login', {
-    method: 'POST',
-    body: JSON.stringify({ email, password }),
-  });
+
+  let data;
+  try {
+    data = await api('/api/auth/login', {
+      method: 'POST',
+      body: JSON.stringify({ email, password }),
+    });
+  } catch {
+    // Backend unreachable — try demo/offline login
+    data = demoLogin(email, password);
+    if (!data) { setError('loginError', 'Invalid email or password'); return; }
+  }
   if (data.error) { setError('loginError', data.error); return; }
   saveSession(data.token, data.user);
   loadDashboard(data.user);
@@ -346,10 +365,17 @@ document.getElementById('registerForm').addEventListener('submit', async e => {
   const email    = document.getElementById('regEmail').value.trim();
   const password = document.getElementById('regPassword').value;
   if (!name || !email || !password) { setError('registerError', 'Please fill in all fields'); return; }
-  const data = await api('/api/auth/register', {
-    method: 'POST',
-    body: JSON.stringify({ name, email, password }),
-  });
+
+  let data;
+  try {
+    data = await api('/api/auth/register', {
+      method: 'POST',
+      body: JSON.stringify({ name, email, password }),
+    });
+  } catch {
+    // Backend unreachable — try demo/offline register
+    data = demoRegister(name, email, password);
+  }
   if (data.error) { setError('registerError', data.error); return; }
   saveSession(data.token, data.user);
   loadDashboard(data.user);
