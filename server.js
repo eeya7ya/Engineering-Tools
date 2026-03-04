@@ -10,14 +10,20 @@ import { dirname, join } from 'path';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const app = express();
-const sql  = neon(process.env.DATABASE_URL);
 const goog = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 app.use(express.json());
 
 // ─── DB Init ──────────────────────────────────────────────────────────────
+let sql = null;
+let _dbError = null;
+
 async function initDB() {
-  await sql`
+  if (!process.env.DATABASE_URL) {
+    throw new Error('DATABASE_URL environment variable is not set');
+  }
+  const db = neon(process.env.DATABASE_URL);
+  await db`
     CREATE TABLE IF NOT EXISTS users (
       id            SERIAL PRIMARY KEY,
       google_id     VARCHAR(255) UNIQUE,
@@ -29,18 +35,26 @@ async function initDB() {
       last_login    TIMESTAMPTZ DEFAULT NOW()
     )
   `;
+  sql = db;
   console.log('[db] schema ready');
 }
 
 // ─── DB Readiness (safe for serverless cold starts) ───────────────────────
 const _dbReady = initDB().catch(err => {
+  _dbError = err;
   console.error('[db] init error:', err.message);
+});
+
+// ─── Public config — no DB needed, must come before DB middleware ─────────
+app.get('/api/config', (_req, res) => {
+  res.json({ googleClientId: process.env.GOOGLE_CLIENT_ID || null });
 });
 
 // Block API requests until DB is initialised
 app.use('/api', async (_req, res, next) => {
-  try { await _dbReady; next(); }
-  catch { res.status(503).json({ error: 'Database temporarily unavailable' }); }
+  await _dbReady;
+  if (_dbError) return res.status(503).json({ error: 'Database temporarily unavailable' });
+  next();
 });
 
 // ─── Helpers ──────────────────────────────────────────────────────────────
@@ -66,11 +80,6 @@ function requireAuth(req, res, next) {
 function publicUser(u) {
   return { id: u.id, email: u.email, name: u.name, avatar: u.avatar };
 }
-
-// ─── Public config (GOOGLE_CLIENT_ID safe to expose) ─────────────────────
-app.get('/api/config', (_req, res) => {
-  res.json({ googleClientId: process.env.GOOGLE_CLIENT_ID });
-});
 
 // ─── Google OAuth ─────────────────────────────────────────────────────────
 app.post('/api/auth/google', async (req, res) => {
