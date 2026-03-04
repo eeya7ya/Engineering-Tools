@@ -40,7 +40,13 @@ async function initDB() {
 }
 
 // ─── DB Readiness (safe for serverless cold starts) ───────────────────────
-const _dbReady = initDB().catch(err => {
+// Race against a timeout so a hung Neon connection never blocks the server
+const _dbReady = Promise.race([
+  initDB(),
+  new Promise((_, reject) =>
+    setTimeout(() => reject(new Error('DB init timed out after 8 s')), 8000)
+  ),
+]).catch(err => {
   _dbError = err;
   console.error('[db] init error:', err.message);
 });
